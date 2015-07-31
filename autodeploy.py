@@ -3,7 +3,6 @@
 
 import sys
 import json
-import datetime
 import subprocess
 import BaseHTTPServer
 
@@ -21,18 +20,14 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         self.respond(200)
         self.wfile.write('Push Hook Success!')
-        self.log("Web Hook Callback.")
         payload = self.parseRequest()
         git = payload['repository']['url']
-        self.log("Receive " + git)
         path = self.matchPath(git)
-        self.log("Updating " + path)
         self.deploy(path)
 
     def do_GET(self):
         self.respond(200)
         self.wfile.write('Waiting for git web hook callback......')
-        self.log(self.path)
 
     def loadConfig(self):
         try:
@@ -47,14 +42,11 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 	return config
 
-    def log(self, msg):
-        print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ": " + msg
-
     def deploy(self, path):
         try:
             subprocess.call(['cd "' + path + '" && git pull'], shell=True)
         except:
-            self.log("Update Fail!")
+            print "Update Fail!"
 
     def respond(self, code):
         self.send_response(code)
