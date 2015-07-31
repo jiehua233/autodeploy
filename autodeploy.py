@@ -41,9 +41,11 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             sys.exit("Load settings file fail!")
 
         try:
-            self.config = json.loads(settings)
+            config = json.loads(settings)
         except:
             sys.exit("Load settings data fail!")
+
+	return config
 
     def log(self, msg):
         print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ": " + msg
