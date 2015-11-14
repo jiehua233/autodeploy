@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
 import json
 import subprocess
 import BaseHTTPServer
@@ -33,15 +32,15 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def deploy(self, repo):
         try:
             subprocess.call(['cd "%s"' % repo['path']], shell=True)
-            logging.info('cd to %s', repo['path'])
+            self.log_message('cd to %s', repo['path'])
             subprocess.call(['git pull origin master'], shell=True)
-            logging.info('git pull origin master')
+            self.log_message('git pull origin master')
             if repo['github']:
                 subprocess.call(['git push github master'], shell=True)
-                logging.info('git push github master')
+                self.log_error('git push github master')
 
         except:
-            logging.error("Update Fail!")
+            self.log_error("Update Fail!")
 
     def respond(self, code):
         self.send_response(code)
@@ -63,7 +62,7 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 def main():
     port = 34567
-    logging.info("AutoDeploy Service start on %s", port)
+    print "AutoDeploy Service start on %s " % port
     server = BaseHTTPServer.HTTPServer(('127.0.0.1', port), AutoDeployHandler)
     server.serve_forever()
 
