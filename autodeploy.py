@@ -32,13 +32,11 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def deploy(self, repo):
         self.log_message('deal with %s', repo['git'])
         try:
-            self.log_message('cd to %s', repo['path'])
-            subprocess.call(['cd "%s"' % repo['path']], shell=True)
-            self.log_message('git pull origin master')
-            subprocess.call(['git pull origin master'], shell=True)
+            self.log_error('cd "%s" && pull origin' % repo['path'])
+            subprocess.call(['cd "%s" && git pull origin master' % repo['path']], shell=True)
             if repo['github']:
-                self.log_error('git push github master')
-                subprocess.call(['git push github master'], shell=True)
+                self.log_error('push to github')
+                subprocess.call(['cd "%s" && git push github master' % repo['path']], shell=True)
 
         except:
             self.log_error("Update Fail!")
