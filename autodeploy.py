@@ -30,14 +30,15 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.wfile.write('Waiting for git web hook callback......')
 
     def deploy(self, repo):
+        self.log_message('deal with %s', repo['git'])
         try:
-            subprocess.call(['cd "%s"' % repo['path']], shell=True)
             self.log_message('cd to %s', repo['path'])
-            subprocess.call(['git pull origin master'], shell=True)
+            subprocess.call(['cd "%s"' % repo['path']], shell=True)
             self.log_message('git pull origin master')
+            subprocess.call(['git pull origin master'], shell=True)
             if repo['github']:
-                subprocess.call(['git push github master'], shell=True)
                 self.log_error('git push github master')
+                subprocess.call(['git push github master'], shell=True)
 
         except:
             self.log_error("Update Fail!")
