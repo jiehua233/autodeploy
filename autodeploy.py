@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
+import logging
 import json
 import subprocess
 import BaseHTTPServer
 
-SETTINGS_FILE = "settings.json"
+import config
+
 
 class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """ AutoDeploy类 """
@@ -22,31 +23,25 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.wfile.write('Push Hook Success!')
         payload = self.parseRequest()
         git = payload['repository']['url']
-        path = self.matchPath(git)
-        self.deploy(path)
+        repo = self.matchPath(git)
+        self.deploy(repo)
 
     def do_GET(self):
         self.respond(200)
         self.wfile.write('Waiting for git web hook callback......')
 
-    def loadConfig(self):
+    def deploy(self, repo):
         try:
-            settings = open(SETTINGS_FILE).read()
-        except:
-            sys.exit("Load settings file fail!")
+            subprocess.call(['cd "%s"' % repo['path']], shell=True)
+            logging.info('cd to %s', repo['path'])
+            subprocess.call(['git pull origin master'], shell=True)
+            logging.info('git pull origin master')
+            if repo['github']:
+                subprocess.call(['git push github master'], shell=True)
+                logging.info('git push github master')
 
-        try:
-            config = json.loads(settings)
         except:
-            sys.exit("Load settings data fail!")
-
-	return config
-
-    def deploy(self, path):
-        try:
-            subprocess.call(['cd "' + path + '" && git pull'], shell=True)
-        except:
-            print "Update Fail!"
+            logging.error("Update Fail!")
 
     def respond(self, code):
         self.send_response(code)
@@ -59,19 +54,16 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         return json.loads(body)
 
     def matchPath(self, git):
-        path = None
-        repos = self.loadConfig()
-        for repo in repos:
+        for repo in config.repos:
             if git == repo['git']:
-                path = repo['path']
-                break
+                return repo
 
-        return path
+        return None
 
 
 def main():
     port = 34567
-    print "AutoDeploy Service started on %s" % port
+    logging.info("AutoDeploy Service start on %s", port)
     server = BaseHTTPServer.HTTPServer(('', port), AutoDeployHandler)
     server.serve_forever()
 
