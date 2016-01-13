@@ -60,7 +60,7 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 
 def main():
-    port = 34567
+    port = 27001
     print "AutoDeploy Service start on %s " % port
     server = BaseHTTPServer.HTTPServer(('127.0.0.1', port), AutoDeployHandler)
     server.serve_forever()
