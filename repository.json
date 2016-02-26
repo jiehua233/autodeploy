@@ -1,0 +1,12 @@
+[
+    {
+        "git": "git@git.chenjiehua.me:wiki/awesome-wiki.git",
+        "github": true,
+        "path": "/home/ubuntu/vhost/"
+    },
+    {
+        "git": "git@git.chenjiehua.me:API/doc.git",
+        "github": true,
+        "path": "/home/ubuntu/vhost/"
+    }
+]
