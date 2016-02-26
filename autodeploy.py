@@ -2,14 +2,31 @@
 # -*- coding: utf-8 -*-
 
 import json
+import logging
 import subprocess
 import BaseHTTPServer
+import sh
 
-import config
 
+def get_logger():
+    logger = logging.getLogger('autodeploy')
+    logger.setLevel(logging.DEBUG)
+    fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    ch = logging.StreamHandler()
+    ch.setFormatter(fmt)
+    ch.setLevel(logging.DEBUG)
+    logger.addHandler(ch)
+    return logger
+
+
+logger = get_logger()
 
 class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """ AutoDeploy类 """
+
+    def do_GET(self):
+        self.respond(200)
+        self.wfile.write('Waiting for git web hook callback......')
 
     def do_POST(self):
         event = self.headers.getheader('X-Gitlab-Event')
@@ -20,49 +37,59 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         self.respond(200)
         self.wfile.write('Push Hook Success!')
-        payload = self.parseRequest()
-        git = payload['repository']['url']
-        repo = self.matchPath(git)
-        self.deploy(repo)
 
-    def do_GET(self):
-        self.respond(200)
-        self.wfile.write('Waiting for git web hook callback......')
+        git_url = self.parse_request()
+        repository = self.match_repository(git_url)
+        self.deploy(repository)
 
-    def deploy(self, repo):
-        self.log_message('deal with %s', repo['git'])
+    def deploy(self, repository):
+        logger.info("Processing %s", repository["git"])
         try:
+            logger.info("Changing working directory to %s", repository["path"])
+            sh.cd(repository["path"])
+            sh.git("pull", "origin")
+
+            result = git.fetch()
             self.log_error('cd "%s" && pull origin' % repo['path'])
             subprocess.call(['cd "%s" && git pull origin master' % repo['path']], shell=True)
-            if repo['github']:
+
+            # sync to github
+            if repository['sync']:
                 self.log_error('push to github')
                 subprocess.call(['cd "%s" && git push github master' % repo['path']], shell=True)
 
-        except:
-            self.log_error("Update Fail!")
+        except Exception as e:
+            logger.error("Deploy error: %s", e)
 
     def respond(self, code):
         self.send_response(code)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-    def parseRequest(self):
+    def parse_request(self):
         length = int(self.headers.getheader('content-length'))
         body = self.rfile.read(length)
-        return json.loads(body)
+        payload = json.loads(body)
+        return payload['repository']['url']
 
-    def matchPath(self, git):
-        for repo in config.repos:
-            if git == repo['git']:
-                return repo
+    def match_repository(self, git):
+        with open('repository.json') as f:
+            try:
+                repositories = json.loads(f.read())
+                for repository in repositories:
+                    if git == repository['git']:
+                        return repository
+
+            except Exception as e:
+                logger.error("Unmarshal repository.json fail: %s", e)
 
         return None
 
 
 def main():
-    port = 27001
-    print "AutoDeploy Service start on %s " % port
-    server = BaseHTTPServer.HTTPServer(('127.0.0.1', port), AutoDeployHandler)
+    host_port = ('127.0.0.1', 27001)
+    logger.info("AutoDeploy Service start on %s", host_port)
+    server = BaseHTTPServer.HTTPServer(host_port, AutoDeployHandler)
     server.serve_forever()
 
 if __name__ == "__main__":
