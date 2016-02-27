@@ -39,7 +39,7 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.respond(200)
         self.wfile.write('Push Hook Success!')
 
-        git_url = self.parse_request()
+        git_url = self.get_git_url()
         repository = self.match_repository(git_url)
         self.deploy(repository)
 
@@ -68,7 +68,7 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-    def parse_request(self):
+    def get_git_url(self):
         length = int(self.headers.getheader('content-length'))
         body = self.rfile.read(length)
         payload = json.loads(body)
