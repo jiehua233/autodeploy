@@ -50,15 +50,15 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             sh.cd(repository["path"])
             # 更新代码
             logger.info("Updating code, git pull origin")
-            logger.info(git.pull("origin"))
+            git.pull("origin", _out=logger.info, _err=logger.error)
             # 清除已删除的分支
             logger.info("Deleting old branches, git fetch -p")
-            logger.info(git.fetch("origin", "-p"))
+            git.fetch("origin", "-p", _out=logger.info, _err=logger.error)
 
             # 同步到github
             if repository['sync']:
                 logger.info("Syncing to github, git push github")
-                logger.info(git.push("github"))
+                git.push("github", _out=logger.info, _err=logger.error, _bg=True)
 
         except Exception as e:
             logger.error("Deploy error: %s", e)
