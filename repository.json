@@ -1,12 +1,72 @@
 [
     {
+        "path": "/home/ubuntu/vhost/wiki/",
         "git": "git@git.chenjiehua.me:wiki/awesome-wiki.git",
-        "github": true,
-        "path": "/home/ubuntu/vhost/"
+        "github": true
     },
     {
-        "git": "git@git.chenjiehua.me:API/doc.git",
-        "github": true,
-        "path": "/home/ubuntu/vhost/"
+        "path": "/home/ubuntu/vhost/docs/movies-doc/",
+        "git": "git@git.chenjiehua.me:qnkdy/movies-doc.git",
+        "github": false
+    },
+    {
+        "path": "/home/ubuntu/vhost/docs/api-doc",
+        "git": "git@git.chenjiehua.me:API/api-doc.git",
+        "github": false
+    },
+    {
+        "path": "/home/ubuntu/vhost/autodeploy",
+        "git": "git@git.chenjiehua.me:tools/autodeploy.git",
+        "github": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/clipboard-share",
+        "git": "git@git.chenjiehua.me:tools/clipboard-share.git",
+        "github": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/youdao-dict",
+        "git": "git@git.chenjiehua.me:tools/youdao-dict.git",
+        "github": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/ipproxy",
+        "git": "git@git.chenjiehua.me:tools/ipproxy.git",
+        "github": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/ginserver",
+        "git": "git@git.chenjiehua.me:tools/ginserver.git",
+        "github": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/api/gzbus-v2-go",
+        "git": "git@git.chenjiehua.me:API/gzbus-v2-go.git",
+        "github": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/api/gzbus-v2-py",
+        "git": "git@git.chenjiehua.me:API/gzbus-v2-py.git",
+        "github": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/api/gzbus-v1-php",
+        "git": "git@git.chenjiehua.me:API/gzbus-v1-php.git",
+        "github": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/api/ipregion",
+        "git": "git@git.chenjiehua.me:API/ipregion.git",
+        "github": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/api/phoneregion",
+        "git": "git@git.chenjiehua.me:API/phoneregion.git",
+        "github": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/api/jokes",
+        "git": "git@git.chenjiehua.me:API/jokes.git",
+        "github": true
     }
 ]

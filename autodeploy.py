@@ -3,9 +3,9 @@
 
 import json
 import logging
-import subprocess
 import BaseHTTPServer
 import sh
+from sh import git
 
 
 def get_logger():
@@ -20,6 +20,7 @@ def get_logger():
 
 
 logger = get_logger()
+
 
 class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """ AutoDeploy类 """
@@ -47,16 +48,17 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         try:
             logger.info("Changing working directory to %s", repository["path"])
             sh.cd(repository["path"])
-            sh.git("pull", "origin")
+            # 更新代码
+            logger.info("Updating code, git pull origin")
+            logger.info(git.pull("origin"))
+            # 清除已删除的分支
+            logger.info("Deleting old branches, git fetch -p")
+            logger.info(git.fetch("origin", "-p"))
 
-            result = git.fetch()
-            self.log_error('cd "%s" && pull origin' % repo['path'])
-            subprocess.call(['cd "%s" && git pull origin master' % repo['path']], shell=True)
-
-            # sync to github
+            # 同步到github
             if repository['sync']:
-                self.log_error('push to github')
-                subprocess.call(['cd "%s" && git push github master' % repo['path']], shell=True)
+                logger.info("Syncing to github, git push github")
+                logger.info(git.push("github"))
 
         except Exception as e:
             logger.error("Deploy error: %s", e)
@@ -88,7 +90,7 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 def main():
     host_port = ('127.0.0.1', 27001)
-    logger.info("AutoDeploy Service start on %s", host_port)
+    logger.info("AutoDeploy Service start on %s:%s" % host_port)
     server = BaseHTTPServer.HTTPServer(host_port, AutoDeployHandler)
     server.serve_forever()
 
