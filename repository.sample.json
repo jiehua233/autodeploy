@@ -1,0 +1,12 @@
+[
+    {
+        "path": "/home/ubuntu/vhost/wiki/",
+        "git": "git@git.chenjiehua.me:wiki/awesome-wiki.git",
+        "sync": true
+    },
+    {
+        "path": "/home/ubuntu/vhost/docs/movies-doc/",
+        "git": "git@git.chenjiehua.me:qnkdy/movies-doc.git",
+        "syn": false
+    }
+]
