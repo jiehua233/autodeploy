@@ -3,10 +3,13 @@
 
 import json
 import logging
+import os.path
 import BaseHTTPServer
 import sh
 from sh import git
 
+
+REPOSITORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'repository.json')
 
 def get_logger():
     logger = logging.getLogger('autodeploy')
@@ -75,7 +78,7 @@ class AutoDeployHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         return payload['repository']['url']
 
     def match_repository(self, git):
-        with open('repository.json') as f:
+        with open(REPOSITORY) as f:
             try:
                 repositories = json.loads(f.read())
                 for repository in repositories:
