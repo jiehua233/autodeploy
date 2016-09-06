@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+project_root = "/home/jachua/project/"
+
+"""Celery backend"""
+backend = {
+    "name": "autodeploy",
+    "broker": "redis://localhost:6379/0",
+    "conf": {
+        "CELERYD_LOG_COLOR": False,
+        "CELERY_INCLUDE": (
+            "deploy",
+        )
+    },
+}
+
+"""Gunicorn setting"""
+bind = "127.0.0.1:27001"
+workers = 1
+worker_class = "gevent"
+accesslog = "-"     # log to stderr
+errorlog = "-"      # log to stderr
+loglevel = "info"
